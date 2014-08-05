@@ -14,6 +14,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
@@ -28,7 +30,7 @@ public class My2048View extends View {
 	private enum State {
 		FAILL, // 失败
 		ANIMATION, // 合并动画
-		RUNING // 运行
+		RUNNING // 运行
 	}
 
 	private enum Directory {
@@ -61,7 +63,7 @@ public class My2048View extends View {
 	private SharedPreferences sharedPreference;
 	private GameChangeListener gameChangeListener;
 
-	private State currentState = State.RUNING;
+	private State currentState = State.RUNNING;
 	private BitmapDrawable bitmapDrawable;
 
 	private int[] colors = { Color.rgb(204, 192, 178), // 1
@@ -85,7 +87,7 @@ public class My2048View extends View {
 	public interface GameChangeListener {
 		public void onChangedGameOver(int score, int maxScore);
 
-		public void onChangeScore(int score);
+		public void onChangedScore(int score);
 	}
 
 	class RefreshHandler extends Handler {
@@ -141,7 +143,7 @@ public class My2048View extends View {
 		this.gameChangeListener = gameChangeListener;
 		gameChangeListener.onChangedGameOver(score,
 				sharedPreference.getInt("maxScore", 0));
-		gameChangeListener.onChangeScore(score);
+		gameChangeListener.onChangedScore(score);
 	}
 
 	/**
@@ -177,13 +179,22 @@ public class My2048View extends View {
 			angler = angler + ANGLE_SPEED;
 			if (angler > 180) {
 				angler = 0;
-				currentState = State.RUNING;
+				currentState = State.RUNNING;
 				clearAnimationData();
 			} else {
 				refreshHandler.sleep(100);
 			}
 
 		}
+	}
+
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		this.mViewWidth = w;
+		this.mViewHeight = h;
+		cellSpace = ((float) mViewWidth - (TOTAL_COL + 1) * SPACE) / TOTAL_COL;
+		textPaint.setTextSize(cellSpace / 3);
 	}
 
 	@Override
@@ -194,6 +205,240 @@ public class My2048View extends View {
 
 	}
 
+	private float mDownX;
+	private float mDownY;
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (currentState == State.ANIMATION) {
+			return false;
+		}
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			mDownX = event.getX();
+			mDownY = event.getY();
+			if(currentState == State.FAILL){
+				if(mDownY < mViewHeight && mDownY > mViewHeight - cellSpace){
+					currentState = State.RUNNING;
+					initData();
+					invalidate();
+				}
+			}
+			return true;
+		case MotionEvent.ACTION_MOVE:
+			float disX = event.getX() - mDownX;
+			float disY = event.getY() - mDownY;
+			if (Math.abs(disX) > touchSlop || Math.abs(disY) > touchSlop) {
+				isMoved = true;
+				if (Math.abs(disX) > Math.abs(disY)) {
+					if (disX > 0) {
+						currentDirectory = Directory.RIGHT;
+					} else {
+						currentDirectory = Directory.LEFT;
+					}
+				} else {
+					if (disY > 0) {
+						currentDirectory = Directory.BOTTOM;
+					} else {
+						currentDirectory = Directory.TOP;
+					}
+				}
+			}
+			return true;
+		case MotionEvent.ACTION_UP:
+			if (isMoved == true) {
+				changeState();
+				randomOneOrTwo();
+				invalidate();
+				isMoved = false;
+			}
+		}
+		
+		return super.onTouchEvent(event);
+	}
+	private void changeState() {
+		switch (currentDirectory) {
+		case TOP:
+			toTop();
+			break;
+		case BOTTOM:
+			toBottom();
+			break;
+		case LEFT:
+			toLeft();
+			break;
+		case RIGHT:
+			toRight();
+			break;
+		}
+		if(currentState == State.ANIMATION){
+			update();
+		}
+	}
+	/*
+	 * 向上移动
+	 */
+	private void toTop() {
+		moveTop();
+		// 合并数字
+		for (int i = 0; i < TOTAL_COL; i++) {
+			for (int j = 0; j < TOTAL_ROW; j++) {
+				for (int k = 0; k < TOTAL_ROW - j - 1; k++) {
+					if (datas[k][i] != 0 && datas[k][i] == datas[k + 1][i]) {
+						datas[k][i] = datas[k][i] + 1;
+						datas[k + 1][i] = 0;
+						score = score + (int)Math.pow(2, datas[k][i]);
+						animationData[k][i] = datas[k][i];
+						gameChangeListener.onChangedScore(score);
+						count--;	
+						currentState = State.ANIMATION; //设置当前状态为动画
+					}
+				}
+			}
+		}
+		moveTop();
+	}
+	
+	private void moveTop(){
+		int temp;
+		for (int i = 0; i < TOTAL_COL; i++) {
+			for (int j = 0; j < TOTAL_ROW; j++) {
+				for (int k = 0; k < TOTAL_ROW - j - 1; k++) {
+					if (datas[k][i] == 0) {
+						temp = datas[k][i];
+						datas[k][i] = datas[k + 1][i];
+						datas[k + 1][i] = temp;
+					}
+				}
+			}
+		}
+	}
+
+	/*
+	 * 向下移动
+	 */
+	private void toBottom() {
+		moveBottom();
+		// 合并数字
+		for (int i = 0; i < TOTAL_COL; i++) {
+			for (int j = 0; j < TOTAL_ROW; j++) {
+				for (int k = TOTAL_ROW - 1; k > j; k--) {
+					if (datas[k][i] != 0 && datas[k][i] == datas[k - 1][i]) {
+						datas[k][i] = datas[k][i] + 1;
+						datas[k - 1][i] = 0;
+						score = score + (int)Math.pow(2, datas[k][i]);
+						gameChangeListener.onChangedScore(score);
+						count--;
+						animationData[k][i] = datas[k][i];
+						currentState = State.ANIMATION; //设置当前状态为动画
+					}
+				}
+			}
+		}
+		moveBottom();
+	}
+	
+	private void moveBottom(){
+		int temp;
+		for (int i = 0; i < TOTAL_COL; i++) {
+			for (int j = 0; j < TOTAL_ROW; j++) {
+				for (int k = TOTAL_ROW - 1; k > j; k--) {
+					if (datas[k][i] == 0) {
+						temp = datas[k][i];
+						datas[k][i] = datas[k - 1][i];
+						datas[k - 1][i] = temp;
+					}
+				}
+			}
+		}
+	}
+
+	private void toLeft() {
+		moveLeft();
+		// 合并数字
+		for (int i = 0; i < TOTAL_ROW; i++) {
+			for (int j = 0; j < TOTAL_COL; j++) {
+				for (int k = 0; k < TOTAL_COL - j - 1; k++) {
+					if (datas[i][k] != 0 && datas[i][k] == datas[i][k + 1]) {
+						datas[i][k] = datas[i][k] + 1;
+						datas[i][k + 1] = 0;
+						score = score + (int)Math.pow(2, datas[i][k]);
+						gameChangeListener.onChangedScore(score);
+						count--;
+						animationData[i][k] = datas[i][k];
+						currentState = State.ANIMATION; //设置当前状态为动画
+					}
+				}
+			}
+		}
+		moveLeft();
+	}
+	
+	private void moveLeft(){
+		int temp;
+		// 向左移动
+		for (int i = 0; i < TOTAL_ROW; i++) {
+			for (int j = 0; j < TOTAL_COL; j++) {
+				for (int k = 0; k < TOTAL_COL - j - 1; k++) {
+					if (datas[i][k] == 0) {
+						temp = datas[i][k];
+						datas[i][k] = datas[i][k + 1];
+						datas[i][k + 1] = temp;
+					}
+				}
+			}
+		}
+	}
+
+	private void toRight() {
+		moveRight();
+		// 合并数字
+		for (int i = 0; i < TOTAL_ROW; i++) {
+			for (int j = 0; j < TOTAL_COL; j++) {
+				for (int k = TOTAL_ROW - 1; k > j; k--) {
+					if (datas[i][k] != 0 && datas[i][k] == datas[i][k - 1]) {
+						datas[i][k] = datas[i][k] + 1;
+						datas[i][k - 1] = 0;
+						score = score + (int)Math.pow(2, datas[i][k]);
+						gameChangeListener.onChangedScore(score);
+						count--;
+						animationData[i][k] = datas[i][k];
+						currentState = State.ANIMATION; //设置当前状态为动画
+					}
+				}
+			}
+		}
+		moveRight();
+	}
+	
+	private void moveRight(){
+		int temp;
+		for (int i = 0; i < TOTAL_COL; i++) {
+			for (int j = 0; j < TOTAL_ROW; j++) {
+				for (int k = TOTAL_ROW - 1; k > j; k--) {
+					if (datas[i][k] == 0) {
+						temp = datas[i][k];
+						datas[i][k] = datas[i][k - 1];
+						datas[i][k - 1] = temp;
+					}
+				}
+			}
+		}
+	}
+	
+	@Override
+	protected void onVisibilityChanged(View changedView, int visibility) {
+		super.onVisibilityChanged(changedView, visibility);
+		if(visibility != View.VISIBLE){
+			int maxScore = sharedPreference.getInt("maxScore", 0);
+			if(score > maxScore){
+				Editor edit = sharedPreference.edit();
+				edit.putInt("maxScore", score);
+				edit.commit();
+			}
+		}
+	}
+	
 	private float pointX;
 	private float pointY;
 
@@ -203,7 +448,7 @@ public class My2048View extends View {
 
 		String showNum;
 
-		if (currentState == State.RUNING || currentState == State.ANIMATION) {
+		if (currentState == State.RUNNING || currentState == State.ANIMATION) {
 			for (int i = 0; i < TOTAL_ROW; i++) {
 				for (int j = 0; j < TOTAL_COL; j++) {
 					pointX = SPACE * (j + 1) + j + cellSpace;
