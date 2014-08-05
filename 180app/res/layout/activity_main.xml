@@ -1,0 +1,132 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:padding="20dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/text_yellow_bg"
+            android:gravity="center"
+            android:text="2048"
+            android:textColor="#ffffff"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:background="@drawable/text_grey_bg"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                tools:ignore="NestedWeights" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="分数"
+                    android:textColor="#E3D4C1"
+                    android:textSize="16dp"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="400"
+                    android:textColor="#ffffff"
+                    tools:ignore="HardcodedText" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="2"
+                android:background="@drawable/text_red_bg"
+                android:gravity="center"
+                android:text="设置"
+                android:textColor="#ffffff"
+                android:textSize="20dp"
+                tools:ignore="HardcodedText,SpUsage" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:background="@drawable/text_grey_bg"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                tools:ignore="NestedWeights" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="最高分数"
+                    android:textColor="#E3D4C1"
+                    android:textSize="16dp"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="400"
+                    android:textColor="#ffffff"
+                    android:textSize="20dp"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="2"
+                android:background="@drawable/text_red_bg"
+                android:gravity="center"
+                android:text="分享"
+                android:textColor="#ffffff"
+                android:textSize="20dp"
+                tools:ignore="HardcodedText,SpUsage" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.example.test2048.My2048View
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/my2048view_bg" >
+    </com.example.test2048.My2048View>
+
+</LinearLayout>
