@@ -46,7 +46,8 @@
                     android:text="分数"
                     android:textColor="#E3D4C1"
                     android:textSize="16dp"
-                    tools:ignore="HardcodedText,SpUsage" />
+                    tools:ignore="HardcodedText,SpUsage"
+                    android:id="@+id/score" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -94,7 +95,8 @@
                     android:text="最高分数"
                     android:textColor="#E3D4C1"
                     android:textSize="16dp"
-                    tools:ignore="HardcodedText,SpUsage" />
+                    tools:ignore="HardcodedText,SpUsage" 
+                    android:id="@+id/maxScore"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -122,11 +124,12 @@
         </LinearLayout>
     </LinearLayout>
 
-    <com.example.test2048.My2048View
+    <com.example.neo.app.My2048View
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/my2048view_bg" >
-    </com.example.test2048.My2048View>
+        android:background="@drawable/my2048view_bg"
+        android:id="@+id/my2048View" >
+    </com.example.neo.app.My2048View>
 
 </LinearLayout>
