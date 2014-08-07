@@ -1,4 +1,4 @@
-package com.example.neo.app;
+package com.example.neo.app.act1;
 
 import java.util.Random;
 
