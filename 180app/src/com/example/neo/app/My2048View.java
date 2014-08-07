@@ -1,7 +1,5 @@
 package com.example.neo.app;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import android.content.Context;
@@ -36,7 +34,7 @@ public class My2048View extends View {
 	private static final int TOTAL_ROW = 4; // 行
 	private static final int TOTAL_COL = 4; // 列
 	private static final int SPACE = 15; // 行和列之间的间隙
-	private static final int ANGLE_SPEED = 45;
+	private static final int ANGLE_SPEED = 10;
 	
 	private int mViewWidth; // View的宽度
 	private int mViewHeight; // View的高度
@@ -122,13 +120,12 @@ public class My2048View extends View {
 	private void update(){
 		if(currentState == State.ANIMATION){
 			angler = angler + ANGLE_SPEED;
-			System.out.println("angler = " + angler);
 			if(angler > 180){
 				angler = 0;
 				currentState = State.RUNNING;
 				clearAnimationData();
 			}else{
-				refreshHandler.sleep(100);
+				refreshHandler.sleep(50);
 			}
 		}
 	}
@@ -213,11 +210,10 @@ public class My2048View extends View {
 		case MotionEvent.ACTION_MOVE:
 			float disX = event.getX() - mDownX;
 			float disY = event.getY() - mDownY;
-			Log.e("test", "disX="+disX+",disY="+disY);
 			if (Math.abs(disX) > touchSlop || Math.abs(disY) > touchSlop) {
 				isMoved = true;
 				
-				/*if (Math.abs(disX) > Math.abs(disY)) {
+				if (Math.abs(disX) > Math.abs(disY)) {
 					if (disX > 0) {
 						currentDirectory = Directory.RIGHT;
 					} else {
@@ -229,7 +225,7 @@ public class My2048View extends View {
 					} else {
 						currentDirectory = Directory.TOP;
 					}
-				}*/
+				}
 			}
 			return true;
 		case MotionEvent.ACTION_UP:
@@ -244,20 +240,20 @@ public class My2048View extends View {
 	}
 
 	private void changeState() {
-//		switch (currentDirectory) {
-//		case TOP:
-//			toTop();
-//			break;
-//		case BOTTOM:
-//			toBottom();
-//			break;
-//		case LEFT:
-//			toLeft();
-//			break;
-//		case RIGHT:
-//			toRight();
-//			break;
-//		}
+		switch (currentDirectory) {
+		case TOP:
+			toTop();
+			break;
+		case BOTTOM:
+			toBottom();
+			break;
+		case LEFT:
+			toLeft();
+			break;
+		case RIGHT:
+			toRight();
+			break;
+		}
 		if(currentState == State.ANIMATION){
 			update();
 		}
@@ -286,6 +282,8 @@ public class My2048View extends View {
 		}
 		moveTop();
 	}
+	
+	
 	
 	private void moveTop(){
 		int temp;
@@ -432,6 +430,7 @@ public class My2048View extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+	    Log.e("test", "重绘!");
 		super.onDraw(canvas);
 		String showNum;
 		if(currentState == State.RUNNING || currentState == State.ANIMATION){
@@ -440,9 +439,9 @@ public class My2048View extends View {
 					pointX = SPACE * (j + 1) + j * cellSpace;
 					pointY = SPACE * (i + 1) + i * cellSpace;
 					// 绘制背景
-//					rectf.set(pointX, pointY, pointX + cellSpace, pointY
-//							+ cellSpace);
-//					paint.setColor(colors[datas[i][j]]);
+					rectf.set(pointX, pointY, pointX + cellSpace, pointY
+							+ cellSpace);
+					paint.setColor(colors[datas[i][j]]);
 					if(currentState == State.ANIMATION && datas[i][j] != 0 && animationData[i][j] != 0){
 						canvas.save();
 						canvas.rotate(angler, pointX + cellSpace / 2, pointY + cellSpace / 2);
