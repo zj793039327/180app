@@ -98,7 +98,7 @@ public class My2048View extends View {
 		rectf = new RectF();
 		random = new Random();
 		touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-		sharedPreference = context.getSharedPreferences("my2048", context.MODE_PRIVATE);
+		sharedPreference = context.getSharedPreferences("my2048", Context.MODE_PRIVATE);
 		initData();
 	}
 
@@ -125,7 +125,7 @@ public class My2048View extends View {
 				currentState = State.RUNNING;
 				clearAnimationData();
 			}else{
-				refreshHandler.sleep(50);
+				refreshHandler.sleep(15);
 			}
 		}
 	}
