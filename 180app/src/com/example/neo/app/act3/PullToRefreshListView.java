@@ -1,6 +1,7 @@
 package com.example.neo.app.act3;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.LayoutInflater;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -44,6 +45,18 @@ public class PullToRefreshListView extends ListView {
 	//箭头旋转的动画
 	private RotateAnimation animation;
 	private RotateAnimation reverseAnimation;
+	
+	//用于保证startY的值在一个完整的touch事件中只被记录一次
+	private boolean isRecorded;
+	private int headContentHeight;
+	private int headContentWidth;
+	private int startY;
+	private int firstItemIndex;
+	private int state;
+	private boolean isBack;
+	
+	
+	private OnRefreshListener refreshListener;
 	
 	
 	
