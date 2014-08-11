@@ -77,5 +77,12 @@ public class MainActivity extends Activity {
 		m.put("desc", "还是csdn里面 '阳光小强' 同学的程序，借鉴之。");
 		m.put("class", null);
 		data.add(m);
+		
+		m = new HashMap<String, Object>();
+		m.put("img", R.drawable.ap_normal);
+		m.put("name", "下拉刷新ListView");
+		m.put("desc", "自己实现一个，看下效果");
+		m.put("class", null);
+		data.add(m);
 	}
 }
