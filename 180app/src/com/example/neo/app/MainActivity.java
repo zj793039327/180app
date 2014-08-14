@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.example.neo.app.act1.Act2048;
+import com.example.neo.app.act3.TestRefreshActivity;
 import com.example.neo.app.commons.dialog.IgnitedDialogs;
 
 public class MainActivity extends Activity {
@@ -82,7 +83,7 @@ public class MainActivity extends Activity {
 		m.put("img", R.drawable.ap_normal);
 		m.put("name", "下拉刷新ListView");
 		m.put("desc", "自己实现一个，看下效果");
-		m.put("class", null);
+		m.put("class", TestRefreshActivity.class);
 		data.add(m);
 	}
 }

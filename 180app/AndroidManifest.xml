@@ -25,6 +25,10 @@
             android:name="com.example.neo.app.act1.Act2048"
             android:label="@string/act1_name" >
         </activity>
+        <activity
+            android:name="com.example.neo.app.act3.TestRefreshActivity"
+            android:label="@string/act3_name" >
+        </activity>
     </application>
 
 </manifest>
