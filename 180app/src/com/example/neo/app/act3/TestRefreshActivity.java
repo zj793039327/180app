@@ -31,9 +31,11 @@ public class TestRefreshActivity extends Activity {
 
 		listView = (PullToRefreshListView) findViewById(R.id.pull_to_refresh_view);
 		data = new ArrayList<String>();
+		data.add("new item");
 		adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, data);
-
+		listView.setAdapter(adapter);
+		
 		listView.setonRefreshListener(new OnRefreshListener() {
 
 			@Override

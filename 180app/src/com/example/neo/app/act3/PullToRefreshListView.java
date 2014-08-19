@@ -53,7 +53,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 	private RotateAnimation reverseAnimation;
 
 	// 用于保证startY的值在一个完整的touch事件中只被记录一次
-	private boolean isRecorded;
+	private boolean isRecored;
 	private int headContentHeight;
 	private int headContentWidth;
 	private int startY;
@@ -69,16 +69,16 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		super(context);
 		init(context);
 	}
-	
-	public PullToRefreshListView(Context context, AttributeSet attrs)   
-    {  
-        super(context, attrs);  
-        init(context);  
-    }  
+
+	public PullToRefreshListView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init(context);
+	}
 
 	private void init(Context context) {
 
-		setCacheColorHint(context.getResources().getColor(android.R.color.transparent));
+		setCacheColorHint(context.getResources().getColor(
+				android.R.color.transparent));
 		inflater = LayoutInflater.from(context);
 		headView = (LinearLayout) inflater.inflate(R.layout.header, null);
 
@@ -126,7 +126,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
 	private void measureView(LinearLayout headView2) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -139,26 +139,94 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
-	public boolean onTouchEvent(MotionEvent ev) {
-		// TODO Auto-generated method stub
-		return super.onTouchEvent(ev);
+	public boolean onTouchEvent(MotionEvent event) {
+		
+		if (isRefreshable) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				if (firstItemIndex == 0 && !isRecored) {
+					isRecored = true;
+					startY = (int) event.getY();
+					Log.v(TAG, "在down的时候记录位置");
+				}
+				break;
+			case MotionEvent.ACTION_UP:
+				if (state != REFRESHING && state != LOADING) {
+					if (state == DONE) {
+						// do nothing
+					}
+					if (state == PULL_TO_REFRESH) {
+						state = DONE;
+						changeHeaderViewByState();
+						Log.v(TAG, "由下拉刷新状态, 到done状态");
+					}
+					if (state == RELEASE_TO_REFRESH) {
+						state = REFRESHING;
+						changeHeaderViewByState();
+						onRefresh();
+
+						Log.v(TAG, "由松开刷新状态, 到 done状态");
+					}
+				}
+				isRecored = false;
+				isBack = false;
+				break;
+
+			case MotionEvent.ACTION_MOVE:
+				int tempY = (int) event.getY();
+				if (!isRecored && firstItemIndex == 0)
+					;
+				{
+					Log.v(TAG, "在move的时候记录位置");
+					isRecored = true;
+					startY = tempY;
+				}
+				if (state != REFRESHING && isRecored && state != LOADING) {
+					// 保证在设置padding的过程中, 当前we位置一直在head, 否则当列表超出屏幕时候, 再向上推,
+					// 列表回同时进行滚动
+					// 可以松手去刷新了
+					if (state == RELEASE_TO_REFRESH) {
+						setSelection(0);
+						// 往上推, 推到了屏幕足够掩盖head的程度, 但是还没有全部掩盖
+						if ((tempY - startY) / RATIO < headContentHeight
+								&& (tempY - startY) > 0) {
+							state = PULL_TO_REFRESH;
+							changeHeaderViewByState();
+							Log.v(TAG, "由松开刷新状态转变到下拉刷新状态");
+						} else if (tempY - startY <= 0) {
+						}
+
+					}
+				}
+			}
+		}
+		return super.onTouchEvent(event);
 	}
-	
-	public void setonRefreshListener(OnRefreshListener refreshListener)  
-    {  
-        this.refreshListener = refreshListener;  
-        isRefreshable = true;  
-    }  
-	
-	public interface OnRefreshListener   
-    {  
-        public void onRefresh();  
-    }
+
+	private void changeHeaderViewByState() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void setonRefreshListener(OnRefreshListener refreshListener) {
+		this.refreshListener = refreshListener;
+		isRefreshable = true;
+	}
+
+	public interface OnRefreshListener {
+		public void onRefresh();
+	}
 
 	public void onRefreshComplete() {
 		// TODO Auto-generated method stub
-		
-	}  
+
+	}
+
+	private void onRefresh() {
+		if (refreshListener != null) {
+			refreshListener.onRefresh();
+		}
+	}
 }
