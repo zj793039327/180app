@@ -31,7 +31,10 @@ public class TestRefreshActivity extends Activity {
 
 		listView = (PullToRefreshListView) findViewById(R.id.pull_to_refresh_view);
 		data = new ArrayList<String>();
-		data.add("new item");
+		data.add("new item0");
+		data.add("new item0");
+		data.add("new item0");
+		data.add("new item0");
 		adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, data);
 		listView.setAdapter(adapter);
@@ -48,7 +51,10 @@ public class TestRefreshActivity extends Activity {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						data.add("new item");
+						data.add("new item1");
+						data.add("new item2");
+						data.add("new item3");
+						data.add("new item4");
 						return null;
 					}
 
